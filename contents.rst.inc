@@ -1,7 +1,7 @@
-Guide du développeur
+Developper’s Guide
 --------------------
 
-Les différentes section de la documentation sont accessibles directement.
+The documentation's different sections are straight accessible from the below links.
 
 .. toctree::
    :maxdepth: 2
