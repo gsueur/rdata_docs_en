@@ -1,0 +1,102 @@
+<html>
+<head>
+  <title>Utilisation des services GrandLyon Data : OpenLayers</title>
+    <script src="http://openlayers.org/api/OpenLayers.js"></script>
+    </head>
+    <body>
+      <div style="width:100%; height:100%" id="map"></div>
+      <script defer="defer" type="text/javascript">
+        var map = new OpenLayers.Map('map');
+        var osm = new OpenLayers.Layer.OSM('Simple OSM Map', null, {
+            eventListeners: {
+                tileloaded: function(evt) {
+                    var ctx = evt.tile.getCanvasContext();
+                    if (ctx) {
+                        var imgd = ctx.getImageData(0, 0, evt.tile.size.w, evt.tile.size.h);
+                        var pix = imgd.data;
+                        for (var i = 0, n = pix.length; i < n; i += 4) {
+                            pix[i] = pix[i + 1] = pix[i + 2] = (3 * pix[i] + 4 * pix[i + 1] + pix[i + 2]) / 8;
+                        }
+                        ctx.putImageData(imgd, 0, 0);
+                        evt.tile.imgDiv.removeAttribute("crossorigin");
+                        evt.tile.imgDiv.src = ctx.canvas.toDataURL();
+                    }
+                }
+            }
+        });
+        
+        //var proxy = "proxy.php?url=";
+        var rdata_url = "https://secure.grandlyon.webmapping.fr/wfs/rdata?";
+        //var params = '?SERVICE=WFS&REQUEST=GetFeature&version=1.1.0&TYPENAME=jcd_jcdecaux.jcdvelov&outputformat=geojson';
+        OpenLayers.ProxyHost = "/cgi-bin/proxy.cgi?url=";
+        
+        //Styles pour le rendu
+        var colors = ["green", "blue", "orange", "grey"];
+        var context = {
+            getColor: function(feature) {  
+                return colors[feature.data.availabilitycode - 1];
+            }
+        }  
+        var template = {
+          pointRadius: 15,
+          fillColor: "${getColor}" // using context.getColor(feature)
+        };
+        var style = new OpenLayers.Style(template, {context: context});
+        
+        //Définition du layer WFS
+        var wfs = new OpenLayers.Layer.Vector("WFS rdata", {
+            strategies: [new OpenLayers.Strategy.BBOX()],
+            protocol: new OpenLayers.Protocol.WFS({
+                version: "1.1.0",
+                srsName: "EPSG:4326",
+                url: rdata_url,
+                featurePrefix : 'ms',
+                featureType: "jcd_jcdecaux.jcdvelov",
+                geometryName: "msGeometry",
+                formatOptions: {
+                  xy: false
+                }
+            }),
+            styleMap: new OpenLayers.StyleMap(style),
+            renderers: OpenLayers.Layer.Vector.prototype.renderers
+        });
+             
+        //gestion du click sur les markers
+        var selectControl = new OpenLayers.Control.SelectFeature(wfs);
+        map.addControl(selectControl);
+        selectControl.activate();
+        
+        wfs.events.on({ 
+          featureselected: function(event) {
+            var feature = event.feature;
+            feature.popup = new OpenLayers.Popup.FramedCloud("box",
+                    feature.geometry.getBounds().getCenterLonLat(),
+                    null,
+                    '<div><b>'+feature.data.name + '</b> (station '+feature.data.number+')<br/>'
+                    + 'Il reste <b>' + feature.data.available_bikes + '</b> v&eacute;los disponibles et '
+                    + '<b>' + feature.data.available_bike_stands + ' </b>plots libres</div>',
+                    null,
+                    true
+            );
+            while( map.popups.length ) {
+                    map.removePopup( map.popups[0] );
+            }
+            map.addPopup(feature.popup);
+            }
+        });
+
+        //Config de la map
+        map.addLayers([osm, wfs]);
+        var zoom = 15;
+        var lonLat = new OpenLayers.LonLat(4.85,45.76);
+        map.setCenter(
+            lonLat.transform(
+                new OpenLayers.Projection("EPSG:4326"),
+                map.getProjectionObject()
+            ), zoom
+        ); 
+    
+      </script>
+
+</body>
+</html>

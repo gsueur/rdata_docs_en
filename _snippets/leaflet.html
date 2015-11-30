@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Utilisation des services GrandLyon Data : Leaflet</title>
+	<meta charset="utf-8" />
+
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		
+	<script src="leaflet.js"></script>
+	<script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
+	
+	<link rel="stylesheet" href="leaflet.css" />
+        <style>
+		body {
+			padding: 0;
+			margin: 0;
+		}
+		html, body, #map {
+			height: 100%;
+		}
+	</style>
+</head>
+<body>
+	<div id="map"></div>
+
+	<script>
+
+		var map = L.map('map').setView([45.76, 4.85], 14);
+/*
+		L.tileLayer('http://{s}.tile.cloudmade.com/4f5c5233516d4c39a218425764d98def/998/256/{z}/{x}/{y}.png', {
+			maxZoom: 18,
+			attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://cloudmade.com">CloudMade</a>'
+		}).addTo(map);
+*/
+
+		L.tileLayer.wms("https://download.data.grandlyon.com/wms/grandlyon",{
+			layers: '1840_5175_16_CC46',
+			format: 'image/png',
+			transparent: true,    
+			opacity: 0.6       
+                }).addTo(map);
+		
+		L.tileLayer.wms("http://openstreetmap.wms.data.grandlyon.com/default",{
+			layers: 'default',
+			format: 'image/png', 
+			transparent: true,    
+			opacity: 0.7       
+                }).addTo(map);
+				
+		var proxy = "proxy.php?url=";
+		var rdata_url = "https://secure.grandlyon.webmapping.fr/wfs/rdata";
+		var params = '?SERVICE=WFS&REQUEST=GetFeature&version=1.1.0&TYPENAME=jcd_jcdecaux.jcdvelov&outputformat=geojson';
+		
+		var VertIcon = L.icon({
+			iconUrl: 'images/cycling_Vert.png',
+			iconSize:     [33, 21]
+		});
+		var OrangeIcon = L.icon({
+			iconUrl: 'images/cycling_Orange.png',
+			iconSize:     [33, 21]
+		});
+		var BleuIcon = L.icon({
+			iconUrl: 'images/cycling_Bleu.png',
+			iconSize:     [33, 21]
+		});
+		var GrisIcon = L.icon({
+			iconUrl: 'images/cycling_Gris.png',
+			iconSize:     [33, 21]
+		});
+		
+		$.get(proxy + encodeURIComponent(rdata_url + params), function(json){
+			var obj = $.parseJSON(json);
+			// Add markers
+			for(i=0;i<obj.features.length;i++) {
+				//create feature from json
+				var ftr = obj.features[i];
+				// set marker options from properties
+				var options = {
+					gid: ftr.properties.gid,
+					number: ftr.properties.number,
+					name: ftr.properties.name,
+					available_bikes: ftr.properties.available_bikes,
+					available_bike_stands: ftr.properties.available_bike_stands
+				};
+				//set marker icon from availability
+				switch(ftr.properties.availability){
+					case 'Vert':
+						options.icon = VertIcon;
+						break;
+					case 'Orange':
+						options.icon = OrangeIcon;
+						break;
+					case 'Bleu' :
+						options.icon = BleuIcon;
+						break;
+					default :
+						options.icon = GrisIcon;
+				}
+				//add marker to map
+				var point = L.marker([ftr.geometry.coordinates[1],ftr.geometry.coordinates[0]],options).addTo(map);
+				//define popup on click
+				point.bindPopup(
+					'<b>'+ point.options.name + '</b> (station '+point.options.number+')<br/>'
+					+ 'Il reste <b>' + point.options.available_bikes + '</b> v&eacute;los disponibles et <b>' + point.options.available_bike_stands + ' </b>plots libres',
+					{
+					closeButton: false
+					}
+				);
+				
+			}
+		});
+
+	</script>
+</body>
+</html>
