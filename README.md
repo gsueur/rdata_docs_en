@@ -1,4 +1,4 @@
 rdata
 =========
 
-Documentation des services offerts par GrandLyon Data
+English version of Data Grand Lyon documentation.
