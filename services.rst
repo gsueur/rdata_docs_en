@@ -30,7 +30,7 @@ It can seem a bit complicated and tedious. But cartographic libraries are here t
 
 WFS Service
 -----------
-The WFS Service allows you to retrieve the raw data as it is recorded in the database. It is a download service, even if this download (the action of retrieving the data) is not necessarily full, as one can only download a part of the territory, mainly for the biggest datasets. 
+The WFS Service allows you to retrieve the raw data as it is recorded in the database. It is a download service, even if this download (the action of retrieving the data) is not necessarily full, as one can only download a part of the territory, which is mainly convenient for the biggest datasets. 
 It is accessible from the URL :
 https://download.data.grandlyon.com/wfs/[name_of_the_service]
 
@@ -68,7 +68,7 @@ Finally, to obtain the desired coverage, one uses a GetCoverage request of this 
 
 https://download.data.grandlyon.com/wcs/grandlyon?service=WCS&BBOX=1830000,5155000,1830100,5155100&request=GetCoverage&version=1.1.0&format=image/tiff&crs=EPSG::3946&identifiers=1830_5155_16_CC46
 
-Once again, it is a standardized service for which the cartographic libraries provide all the necessary classes and operation for a sipmle and efficient usage. 
+Once again, it is a standardized service for which the cartographic libraries provide all the necessary classes and operation for a simple and efficient usage. 
 
 REST Services (JSON)
 -----------------------
@@ -84,7 +84,7 @@ The documents list all the available tables both in consultation and download. S
 
 From link to link, you can then navigate towards the tables description (for instance https://download.data.grandlyon.com/ws/grandlyon/fpc_fond_plan_communaut.fpcplandeau.json), the different predefined values used in a specific field (for instance the type of trees in Greater Lyon : https://download.data.grandlyon.com/ws/grandlyon/abr_arbres_alignement.abrarbre/essencefrancais.json). This last mode provides a few more options : 
 
-* compact : if false, gives a key,value result for all the records, else, only list the different values founds in the whole table. Default is True. 
+* compact : if false, gives a key,value result for all the records, else, only lists the different values found in the whole table. Default is True. 
 
 * maxfeatures : indicates the maximal number of records to be returned by the service. Default is 1000. 
 
@@ -122,5 +122,5 @@ The name of the layer to be used is simply osm_grandlyon. The layer is available
 
 * EPSG:4171 (RGF93)
 
-Please note that these two last systems are degrees defined and not meters defined. Their usage to make a map (instead of accessing the data) leads to a visual result which is kind of crushed, which is completely normal as you are in fact projecting spherical geographic coordinates on a plane surface, being the screen of a file. This projection is named `plate-carr├⌐e <https://en.wikipedia.org/wiki/Equirectangular_projection>`_).
+Please note that these two last systems are degrees defined and not meters defined. Their usage to make a map (instead of accessing the data) leads to a visual result which is kind of crushed, which is completely normal as you are in fact projecting spherical geographic coordinates on a plane surface, being the screen or a file. This projection is named `plate-carrée <https://en.wikipedia.org/wiki/Equirectangular_projection>`_).
 
