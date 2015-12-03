@@ -87,34 +87,34 @@ For any further information about the use of OpenLayers and a Proxy script, plea
 
 .. code-block:: python
 
-	#!/usr/local/bin/python
+#!/usr/local/bin/python
 
 
-	"""This is a blind proxy that we use to get around browser
-	restrictions that prevents the Javascript from loading pages not on the
-	same server as the Javascript.  This has several problems: it's less
-	efficient, it might break some sites, and it's a security risk because
+"""This is a blind proxy that we use to get around browser
+restrictions that prevents the Javascript from loading pages not on the
+same server as the Javascript.  This has several problems: it's less
+efficient, it might break some sites, and it's a security risk because
 people can use this proxy to browse the web and possibly do unacceptable    
 activities with it.  It only loads pages via http and https, but it can    load any content type. It supports GET and POST requests."""
 
-	import urllib2
-	import cgi
-	import sys, os
+import urllib2
+import cgi
+import sys, os
 
-	# Designed to prevent Open Proxy type stuff.
-	# replace 'my_target_server' by the external domain you are aiming to
-	allowedHosts = ['localhost','my_target_server']
+# Designed to prevent Open Proxy type stuff.
+# replace 'my_target_server' by the external domain you are aiming to
+allowedHosts = ['localhost','my_target_server']
 
-	method = os.environ["REQUEST_METHOD"]
+method = os.environ["REQUEST_METHOD"]
 
-	if method == "POST":
-	    qs = os.environ["QUERY_STRING"]
-	    d = cgi.parse_qs(qs)
+if method == "POST":
+    qs = os.environ["QUERY_STRING"]
+    d = cgi.parse_qs(qs)
 	
-		# checks if a url parameter exists in the POST request. If not, go to hell.
-	    if d.has_key("url"):
-	        url = d["url"][0]
-	    else:
+    # checks if a url parameter exists in the POST request. If not, go to hell.
+    if d.has_key("url"):
+        url = d["url"][0]
+    else:
 	        url = "http://www.openlayers.org"
 	else:
 	    fs = cgi.FieldStorage()
