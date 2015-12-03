@@ -122,5 +122,5 @@ The name of the layer to be used is simply osm_grandlyon. The layer is available
 
 * EPSG:4171 (RGF93)
 
-Please note that these two last systems are degrees defined and not meters defined. Their usage to make a map (instead of accessing the data) leads to a visual result which is kind of crushed, which is completely normal as you are in fact projecting spherical geographic coordinates on a plane surface, being the screen of a file. This projection is named `plate-carr├⌐e <https://en.wikipedia.org/wiki/Equirectangular_projection>`_).
+Please note that these two last systems are degrees defined and not meters defined. Their usage to make a map (instead of accessing the data) leads to a visual result which is kind of crushed, which is completely normal as you are in fact projecting spherical geographic coordinates on a plane surface, being the screen of a file. This projection is named `plate-carrée <https://en.wikipedia.org/wiki/Equirectangular_projection>`_).
 
