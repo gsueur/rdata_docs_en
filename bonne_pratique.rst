@@ -87,84 +87,83 @@ For any further information about the use of OpenLayers and a Proxy script, plea
 
 .. code-block:: python
 
-#!/usr/local/bin/python
+    #!/usr/local/bin/python
 
 
-"""This is a blind proxy that we use to get around browser
-restrictions that prevents the Javascript from loading pages not on the
-same server as the Javascript.  This has several problems: it's less
-efficient, it might break some sites, and it's a security risk because
-people can use this proxy to browse the web and possibly do unacceptable    
-activities with it.  It only loads pages via http and https, but it can    load any content type. It supports GET and POST requests."""
+    """This is a blind proxy that we use to get around browser
+    restrictions that prevents the Javascript from loading pages not on the
+    same server as the Javascript.  This has several problems: it's less
+    efficient, it might break some sites, and it's a security risk because
+    people can use this proxy to browse the web and possibly do unacceptable    
+    activities with it.  It only loads pages via http and https, but it can    load any content type. It supports GET and       POST requests."""
 
-import urllib2
-import cgi
-import sys, os
+    import urllib2
+    import cgi
+    import sys, os
 
-# Designed to prevent Open Proxy type stuff.
-# replace 'my_target_server' by the external domain you are aiming to
-allowedHosts = ['localhost','my_target_server']
+    # Designed to prevent Open Proxy type stuff.
+    # replace 'my_target_server' by the external domain you are aiming to
+    allowedHosts = ['localhost','my_target_server']
 
-method = os.environ["REQUEST_METHOD"]
+    method = os.environ["REQUEST_METHOD"]
 
-if method == "POST":
-    qs = os.environ["QUERY_STRING"]
-    d = cgi.parse_qs(qs)
+    if method == "POST":
+        qs = os.environ["QUERY_STRING"]
+        d = cgi.parse_qs(qs)
 
 	# checks if a url parameter exists in the POST request. If not, go to hell.
-    if d.has_key("url"):
-        url = d["url"][0]
+        if d.has_key("url"):
+            url = d["url"][0]
+        else:
+            url = "http://www.openlayers.org"
     else:
-        url = "http://www.openlayers.org"
-else:
-    fs = cgi.FieldStorage()
-	# checks if a url parameter exists in the GET request. If not, go to hell.
-    url = fs.getvalue('url', "http://www.openlayers.org")
+        fs = cgi.FieldStorage()
+	    # checks if a url parameter exists in the GET request. If not, go to hell.
+        url = fs.getvalue('url', "http://www.openlayers.org")
 
-try:
-    host = url.split("/")[2]
+    try:
+        host = url.split("/")[2]
 
 	# reply with HTTP 502 code if the host is not allowed
-    if allowedHosts and not host in allowedHosts:
-        print "Status: 502 Bad Gateway"
-        print "Content-Type: text/plain"
-        print
-        print "This proxy does not allow you to access that location (%s)." % (host,)
-        print
-        print os.environ
-    # checks if the request is a http or https request  
-    elif url.startswith("http://") or url.startswith("https://"):
+        if allowedHosts and not host in allowedHosts:
+            print "Status: 502 Bad Gateway"
+            print "Content-Type: text/plain"
+            print
+            print "This proxy does not allow you to access that location (%s)." % (host,)
+            print
+            print os.environ
+        # checks if the request is a http or https request  
+        elif url.startswith("http://") or url.startswith("https://"):
 
-        if method == "POST":
-            length = int(os.environ["CONTENT_LENGTH"])
-            headers = {"Content-Type": os.environ["CONTENT_TYPE"]}
-            body = sys.stdin.read(length)
-            r = urllib2.Request(url, body, headers)
-            y = urllib2.urlopen(r)
-        else:
-            y = urllib2.urlopen(url)
+            if method == "POST":
+                length = int(os.environ["CONTENT_LENGTH"])
+                headers = {"Content-Type": os.environ["CONTENT_TYPE"]}
+                body = sys.stdin.read(length)
+                r = urllib2.Request(url, body, headers)
+                y = urllib2.urlopen(r)
+            else:
+                y = urllib2.urlopen(url)
     
-        # print content type header
-        i = y.info()
-        if i.has_key("Content-Type"):
-            print "Content-Type: %s" % (i["Content-Type"])
+            # print content type header
+            i = y.info()
+            if i.has_key("Content-Type"):
+                print "Content-Type: %s" % (i["Content-Type"])
+            else:
+                print "Content-Type: text/plain"
+            print
+            print y.read()
+    
+            y.close()
         else:
             print "Content-Type: text/plain"
-        print
-    
-        print y.read()
-    
-        y.close()
-    else:
-        print "Content-Type: text/plain"
-        print
-        print "Illegal request."
+            print
+            print "Illegal request."
 
-except Exception, E:
-    print "Status: 500 Unexpected Error"
-    print "Content-Type: text/plain"
-    print 
-    print "Some unexpected error occurred. Error text was:", E
+    except Exception, E:
+        print "Status: 500 Unexpected Error"
+        print "Content-Type: text/plain"
+        print 
+        print "Some unexpected error occurred. Error text was:", E
 	
 	
 
