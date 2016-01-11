@@ -97,7 +97,7 @@ https://download.data.grandlyon.com/ws/grandlyon/abr_arbres_alignement.abrarbre/
 
 One can also reach the full content of a table (or paginate this content) using a URL such this one :
 
-https://secure.grandlyon.webmapping.fr/ws/rdata/jcd_jcdecaux.jcdvelov/all.json?compact=false
+https://download.data.grandlyon.com/ws/rdata/jcd_jcdecaux.jcdvelov/all.json?compact=false
 
 to consult the integrality of the records. In this all.json mode which dislays individual records, compact flag is always false. All.json also contains complementary information about pagination. It does include two links towards previous and next page, using the same maxfeature and adapting the start parameter from the current page.  
 
